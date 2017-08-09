@@ -3,14 +3,13 @@ package spark.demo
 import java.util.concurrent.TimeUnit
 
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.streaming.{ProcessingTime, Trigger}
+import org.apache.spark.sql.streaming.Trigger
 import org.apache.spark.sql.types._
 
 object StreamingDemo {
   def main(args: Array[String]): Unit = {
 
-    import org.apache.log4j.Logger
-    import org.apache.log4j.Level
+    import org.apache.log4j.{Level, Logger}
     Logger.getLogger("org").setLevel(Level.WARN)
     Logger.getLogger("akka").setLevel(Level.WARN)
 
@@ -19,12 +18,12 @@ object StreamingDemo {
       appName("StructuredNetworkWordCount").
       getOrCreate()
 
-    import spark.implicits._
     import org.apache.spark.sql.functions._
+    import spark.implicits._
 
     val schemaExp = StructType(
       StructField("timestamp", TimestampType, false) ::
-      StructField("name", StringType, false) ::
+        StructField("name", StringType, false) ::
         StructField("city", StringType, true)
         :: Nil
     )
@@ -34,7 +33,7 @@ object StreamingDemo {
       .load("file:///tmp/input")
 
     // DataFrame 的一些API
-//    val wordCounts = words.groupBy("name").count()
+    //    val wordCounts = words.groupBy("name").count()
     val wordCounts = words
       .withWatermark("timestamp", "10 minutes")
       .groupBy(

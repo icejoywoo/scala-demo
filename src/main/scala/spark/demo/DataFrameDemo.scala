@@ -16,16 +16,20 @@ object DataFrameDemo {
     import spark.implicits._
     val sc = spark.sparkContext
 
-    val textFile = sc.textFile("src/main/resources/test.log")
+    val textFile = sc.textFile("src/main/resources/people.json")
     val df = textFile.toDF("line")
 
     df.show()
 
-    val errors = df.filter($"line" like "%ERROR%")
+    val errors = df.filter($"line" like "%Andy%")
 
     println(errors.count())
 
     errors.show()
+
+    val people = spark.read.json("src/main/resources/people.json")
+
+    people.groupBy($"name").count().show()
 
     spark.stop()
   }
