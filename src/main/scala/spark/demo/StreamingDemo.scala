@@ -35,9 +35,9 @@ object StreamingDemo {
     // DataFrame 的一些API
     //    val wordCounts = words.groupBy("name").count()
     val wordCounts = words
-      .withWatermark("timestamp", "10 minutes")
+      .withWatermark("timestamp", "10 seconds")
       .groupBy(
-        window($"timestamp", "10 minutes", "5 minutes"),
+        window($"timestamp", "10 seconds", "5 seconds"),
         $"name")
       .count()
 
