@@ -154,7 +154,7 @@ object chapter3 {
 
     println(reverse(List(1, 2, 3)))
 
-    println(foldRight2(List(1, 2, 3, 4, 5, 6), Nil: List[Int])(Cons(_, _)))
+    println(foldRightViaFoldLeft(List(1, 2, 3, 4, 5, 6), Nil: List[Int])(Cons(_, _)))
 
     println(append(List(1, 2), List(3, 4)))
 
