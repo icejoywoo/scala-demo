@@ -89,11 +89,27 @@ object chapter3 {
   def reverse[A](as: List[A]): List[A] = foldLeft(as, Nil: List[A])((x, y) => Cons(y, x))
 
   // ex 3.13
-  def foldRight2[A, B](as: List[A], z: B)(f: (A, B) => B): B = foldLeft(reverse(as), z)((x, y) => f(y, x))
+  def foldRightViaFoldLeft[A, B](as: List[A], z: B)(f: (A, B) => B): B = foldLeft(reverse(as), z)((x, y) => f(y, x))
 
   // ex 3.14
 //  def append[A](as: List[A], bs: List[A]): List[A] = foldRight(as, bs)(Cons(_, _))
   def append[A](as: List[A], bs: List[A]): List[A] = foldLeft(reverse(as), bs)((x, y) => Cons(y, x))
+
+  // ex 3.16
+  def addOne(as: List[Int]): List[Int] = foldRight(as, Nil: List[Int])((x, y) => Cons(x, y))
+
+  // ex 3.17
+  def toString[A](as: List[A]): List[String] = foldRight(as, Nil: List[String])((x, y) => Cons(x.toString, y))
+
+  // ex 3.19
+  def map[A, B](as: List[A])(f: A => B): List[B] = foldRight(as, Nil: List[B])((x, y) => Cons(f(x), y))
+
+  // ex 3.20
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = foldRight(as, Nil: List[A])((x, y) =>
+    if (f(x)) Cons(x, y) else y )
+
+  // ex 3.21
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = foldRight(as, Nil: List[B])((x, y) => append(f(x), y))
 
   def main(args: Array[String]): Unit = {
     println(List(1, 2, 3))
@@ -141,5 +157,13 @@ object chapter3 {
     println(foldRight2(List(1, 2, 3, 4, 5, 6), Nil: List[Int])(Cons(_, _)))
 
     println(append(List(1, 2), List(3, 4)))
+
+    println(addOne(List(1, 2, 3)))
+
+    println(toString(List(1.0, 2.0, 3.0)))
+
+    println(map(List(1, 2, 3))(x => x + 5))
+
+    println(filter(List(1, 2, 3))(x => x > 2))
   }
 }
