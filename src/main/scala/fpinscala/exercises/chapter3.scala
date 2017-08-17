@@ -70,7 +70,7 @@ object chapter3 {
   }
 
   // ex 3.9
-  def length[A](as: List[A]): Int = foldRight(as, 0)((x, y) => 1 + y)
+  def length[A](as: List[A]): Int = foldRight(as, 0)((_, acc) => 1 + acc)
 
   // ex 3.10
   @tailrec
@@ -95,21 +95,58 @@ object chapter3 {
 //  def append[A](as: List[A], bs: List[A]): List[A] = foldRight(as, bs)(Cons(_, _))
   def append[A](as: List[A], bs: List[A]): List[A] = foldLeft(reverse(as), bs)((x, y) => Cons(y, x))
 
+  // ex 3.15
+  def append_all[A](as: List[A]*): List[A] =
+    if (as.isEmpty) Nil
+    else append(as.head, append_all(as.tail: _*))
+
   // ex 3.16
   def addOne(as: List[Int]): List[Int] = foldRight(as, Nil: List[Int])((x, y) => Cons(x, y))
 
   // ex 3.17
   def toString[A](as: List[A]): List[String] = foldRight(as, Nil: List[String])((x, y) => Cons(x.toString, y))
 
-  // ex 3.19
+  // ex 3.18
   def map[A, B](as: List[A])(f: A => B): List[B] = foldRight(as, Nil: List[B])((x, y) => Cons(f(x), y))
 
-  // ex 3.20
+  // ex 3.19
   def filter[A](as: List[A])(f: A => Boolean): List[A] = foldRight(as, Nil: List[A])((x, y) =>
     if (f(x)) Cons(x, y) else y )
 
-  // ex 3.21
+  // ex 3.20
   def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = foldRight(as, Nil: List[B])((x, y) => append(f(x), y))
+
+  // ex 3.21
+  def filter2[A](as: List[A])(f: A => Boolean): List[A] = append_all(flatMap(as)(x => if (f(x)) Cons(x, Nil) else Nil))
+
+  // ex 3.22
+  def addPairwise(a: List[Int], b: List[Int]): List[Int] = (a, b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(x, xs), Cons(y, ys)) => Cons(x+y, addPairwise(xs, ys))
+  }
+
+  // ex 3.23
+  def zipWith[A, B, C](a: List[A], b: List[B])(f: (A, B) => C): List[C] = (a, b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(x, xs), Cons(y, ys)) => Cons(f(x, y), zipWith(xs, ys)(f))
+  }
+
+  // ex 3.24
+  @tailrec
+  def startsWith[A](l: List[A], h: List[A]): Boolean = (l, h) match {
+    case (_, Nil) => true
+    case (Cons(x, xs), Cons(y, ys)) if x == y => startsWith(xs, ys)
+    case _ => false
+  }
+
+  @tailrec
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match {
+    case Nil => Nil == sub
+    case _ if startsWith(sup, sub) => true
+    case Cons(x, xs) => hasSubsequence(xs, sub)
+  }
 
   def main(args: Array[String]): Unit = {
     println(List(1, 2, 3))
@@ -158,6 +195,8 @@ object chapter3 {
 
     println(append(List(1, 2), List(3, 4)))
 
+    println(append_all(List(1, 2), List(3), List(4, 5)))
+
     println(addOne(List(1, 2, 3)))
 
     println(toString(List(1.0, 2.0, 3.0)))
@@ -165,5 +204,19 @@ object chapter3 {
     println(map(List(1, 2, 3))(x => x + 5))
 
     println(filter(List(1, 2, 3))(x => x > 2))
+
+    println(flatMap(List(1, 2, 3))(x => List(s"${x} is string")))
+
+    println(filter2(List(1, 2, 3))(x => x > 2))
+
+    println(addPairwise(List(1, 2, 3), List(4, 5, 6)))
+
+    println(zipWith(List(1, 2, 3), List(4, 5, 6))((x, y) => x + y))
+
+    assert(hasSubsequence(List(1, 2, 3, 4), List(1, 2)))
+    assert(hasSubsequence(List(1, 2, 3, 4), List(2, 3)))
+    assert(hasSubsequence(List(1, 2, 3, 4), List(3, 4)))
+    assert(hasSubsequence(List(1, 2, 3, 3, 4), List(3, 4)))
+    assert(!hasSubsequence(List(1, 2, 3, 4), List(2, 4)))
   }
 }
