@@ -135,3 +135,4 @@ spark-warehouse/
 src/test/resources/
 src/test/scala/
 stream_generate.py
+target/
